@@ -1,0 +1,282 @@
+@if (!showScoreboard) {
+  <!-- Target Overs Dialog -->
+  @if (showTargetOversDialog) {
+    <div class="dialog-overlay">
+      <div class="dialog-container">
+        <h3>Set Target Overs</h3>
+        <div class="dialog-content">
+          <label for="targetOversInput">Number of Overs for 2nd Innings:</label>
+          <input type="number" id="targetOversInput" [(ngModel)]="targetOversInput" min="1" max="50">
+        </div>
+        <div class="dialog-actions">
+          <button class="btn-confirm" (click)="confirmTargetOvers()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Batsman Selection Dialog -->
+  @if (showBatsmanSelectionDialog) {
+    <div class="dialog-overlay">
+      <div class="dialog-container">
+        <h3>Select Next Batsman</h3>
+        <div class="selection-list">
+          @for (batsman of availableBatsmen; track batsman.name) {
+            <button class="selection-btn" (click)="selectBatsman(batsman)">
+              {{ batsman.name }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Bowler Selection Dialog -->
+  @if (showBowlerSelectionDialog) {
+    <div class="dialog-overlay">
+      <div class="dialog-container">
+        <h3>Select Next Bowler</h3>
+        <div class="selection-list">
+          @for (bowler of availableBowlers; track bowler.name) {
+            <button class="selection-btn" (click)="selectBowler(bowler)">
+              {{ bowler.name }} ({{ bowler.ballsBowled }} balls)
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <section class="scorer" [class.bowling-team-red]="matchState.bowlingTeam === 'A'" [class.bowling-team-blue]="matchState.bowlingTeam === 'B'">
+    
+
+    <!-- Score Display -->
+    <div class="scorer__header">
+      <div class="score-display">
+        <div class="score-card">
+          <div class="score-value">{{ matchState.totalScore }}</div>
+          <div class="score-label">Score</div>
+        </div>
+        <div class="divider"></div>
+        <div class="overs-card">
+          <div class="overs-value">{{ matchState.overs }}.{{ matchState.balls }}</div>
+          <div class="overs-label">Over</div>
+        </div>
+        <div class="divider"></div>
+        <div class="wickets-card">
+          <div class="wickets-value">{{ matchState.wickets }}</div>
+          <div class="wickets-label">Wicket</div>
+        </div>
+      </div>
+
+      <!-- Target Mode Info -->
+      @if (matchState.isSecondInnings) {
+        <div class="target-info">
+          <div class="target-card">
+            <span class="target-value">{{ getRunsRequired() }}</span>
+            <span class="target-label">Runs Required</span>
+          </div>
+          <div class="target-divider"></div>
+          <div class="balls-left-card">
+            <span class="balls-left-value">{{ getBallsRemaining() }}</span>
+            <span class="balls-left-label">Balls Left</span>
+          </div>
+        </div>
+      }
+    </div>
+    
+    <!-- Batsmen Information -->
+    <div class="batsmen-info">
+      <div class="batsman-card batsman-striker">
+        <div class="batsman-badge">🏏</div>
+        <div class="batsman-details">
+          <div class="batsman-name">{{ getStrikerName() }}</div>
+          <div class="batsman-stats">
+            <span class="stat">{{ matchState.batsmenStats[matchState.battingTeam]?.[matchState.strikerIndex]?.runs || 0 }} ({{ matchState.batsmenStats[matchState.battingTeam]?.[matchState.strikerIndex]?.ballsFaced || 0 }})</span>
+          </div>
+        </div>
+        <div class="striker-label">Striker</div>
+      </div>
+
+      <div class="batsman-card batsman-non-striker">
+        <div class="batsman-badge">🏏</div>
+        <div class="batsman-details">
+          <div class="batsman-name">{{ getNonStrikerName() }}</div>
+          <div class="batsman-stats">
+            <span class="stat">{{ matchState.batsmenStats[matchState.battingTeam]?.[matchState.nonStrikerIndex]?.runs || 0 }} ({{ matchState.batsmenStats[matchState.battingTeam]?.[matchState.nonStrikerIndex]?.ballsFaced || 0 }})</span>
+          </div>
+        </div>
+        <div class="non-striker-label">Non-Striker</div>
+      </div>
+    </div>
+
+    <div class="scorer__balls">
+      <div class="balls-label">Balls in Over</div>
+      <div class="balls-grid">
+        @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+          <div class="ball-slot" [class.filled]="matchState.ballsInOver[i]">
+            @if (matchState.ballsInOver[i]) {
+              <span>{{ getBallDisplay(matchState.ballsInOver[i]) }}</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Bowler Information -->
+    <div class="bowler-info">
+      <div class="bowler-card">
+        <div class="bowler-badge">🎯</div>
+        <div class="bowler-details">
+          <div class="bowler-name">{{ getBowlerName() }}</div>
+          <div class="bowler-stats">
+            <span class="stat">{{ matchState.bowlersStats[matchState.bowlingTeam]?.[matchState.bowlerIndex]?.ballsBowled || 0 }}-{{ matchState.bowlersStats[matchState.bowlingTeam]?.[matchState.bowlerIndex]?.runsGiven || 0 }}</span>
+            <span class="stat">W: {{ matchState.bowlersStats[matchState.bowlingTeam]?.[matchState.bowlerIndex]?.wickets || 0 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scorer__actions">
+      <button class="action-btn action-btn--dot" (click)="recordRun(0, 'dot')">
+        <span class="btn-value">D</span>
+        <span class="btn-label">Dot</span>
+      </button>
+      <button class="action-btn action-btn--single" (click)="recordRun(1, 'single')">
+        <span class="btn-value">1</span>
+        <span class="btn-label">Single</span>
+      </button>
+      <button class="action-btn action-btn--double" (click)="recordRun(2, 'double')">
+        <span class="btn-value">2</span>
+        <span class="btn-label">Double</span>
+      </button>
+      <button class="action-btn action-btn--triple" (click)="recordRun(3, 'triple')">
+        <span class="btn-value">3</span>
+        <span class="btn-label">Triple</span>
+      </button>
+      <button class="action-btn action-btn--four" (click)="recordRun(4, 'four')">
+        <span class="btn-value">4</span>
+        <span class="btn-label">Four</span>
+      </button>
+      <button class="action-btn action-btn--six" (click)="recordRun(6, 'six')">
+        <span class="btn-value">6</span>
+        <span class="btn-label">Six</span>
+      </button>
+      <button class="action-btn action-btn--wide" (click)="recordRun(1, 'wide')">
+        <span class="btn-value">W</span>
+        <span class="btn-label">Wide</span>
+      </button>
+      <button class="action-btn action-btn--noball" (click)="recordRun(1, 'noball')">
+        <span class="btn-value">NB</span>
+        <span class="btn-label">No Ball</span>
+      </button>
+      <button class="action-btn action-btn--wicket" (click)="recordRun(0, 'wicket');recordWicket()">
+        <span class="btn-value">W</span>
+        <span class="btn-label">Wicket</span>
+      </button>
+    </div>
+
+    <div class="scorer__controls">
+      <button class="control-btn control-btn--undo" (click)="undoLastBall()">↶ Undo</button>
+      <button class="control-btn control-btn--scoreboard" (click)="toggleScoreboard()">📊 Scoreboard</button>
+    </div>
+  </section>
+} @else {
+  <div class="scoreboard-view">
+    <button class="close-btn" (click)="toggleScoreboard()">✕ Close</button>
+
+    <!-- Team Scorecard -->
+    <div class="team-scorecard">
+      <div class="innings-header">
+        <h2>{{ matchState.battingTeam === 'A' ? 'Team A' : 'Team B' }} Batting</h2>
+        <div class="innings-score">
+          <span class="score">{{ matchState.totalScore }}/{{ matchState.wickets }}</span>
+          <span class="overs">{{ matchState.overs }}.{{ matchState.balls }}</span>
+        </div>
+      </div>
+
+      <!-- Batsmen List -->
+      <div class="batsmen-list">
+        <h3>Batsmen</h3>
+        <div class="table-responsive">
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Runs</th>
+                <th>Balls</th>
+                <th>4s</th>
+                <th>6s</th>
+                <th>SR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (batsman of matchState.batsmenStats[matchState.battingTeam]; track batsman.name) {
+                <tr [class.out]="batsman.isOut">
+                  <td>{{ batsman.name }} @if (batsman.isOut) { <span class="out-label">(out)</span> }</td>
+                  <td>{{ batsman.runs }}</td>
+                  <td>{{ batsman.ballsFaced }}</td>
+                  <td>{{ batsman.fours }}</td>
+                  <td>{{ batsman.sixes }}</td>
+                  <td>{{ batsman.ballsFaced > 0 ? ((batsman.runs * 100) / batsman.ballsFaced).toFixed(2) : '0' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bowlers List -->
+      <div class="bowlers-list">
+        <h3>Bowlers ({{ matchState.bowlingTeam === 'A' ? 'Team A' : 'Team B' }})</h3>
+        <div class="table-responsive">
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Balls</th>
+                <th>Runs</th>
+                <th>Wickets</th>
+                <th>Economy</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (bowler of matchState.bowlersStats[matchState.bowlingTeam]; track bowler.name) {
+                @if (bowler.ballsBowled > 0) {
+                  <tr>
+                    <td>{{ bowler.name }}</td>
+                    <td>{{ bowler.ballsBowled }}</td>
+                    <td>{{ bowler.runsGiven }}</td>
+                    <td>{{ bowler.wickets }}</td>
+                    <td>{{ ((bowler.runsGiven * 6) / bowler.ballsBowled).toFixed(2) }}</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Run History by Over -->
+      <div class="run-history">
+        <h3>Run History</h3>
+        <div class="overs-container">
+          @for (overData of getRunHistoryByOver(); track overData.over) {
+            <div class="over-block">
+              <div class="over-header">Over {{ overData.over }}</div>
+              <div class="balls-display">
+                @for (ball of overData.balls; track $index) {
+                  <span class="ball-badge" [class.wide]="ball.type === 'wide'" [class.noball]="ball.type === 'noball'" [class.wicket]="ball.type === 'wicket'">
+                    {{ getBallDisplay(ball) }} <span class="ball-runs">@if (ball.runs > 0) { ({{ ball.runs }}) }</span>
+                  </span>
+                }
+              </div>
+              <div class="over-total">Total: {{ overData.runsInOver }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+

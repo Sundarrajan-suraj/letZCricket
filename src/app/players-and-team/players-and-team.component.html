@@ -1,0 +1,103 @@
+@if (isLoading) {
+  <div class="loader-overlay">
+    <div class="loader-card">
+      <div class="loader-spinner"></div>
+      <p>Loading your saved team details...</p>
+    </div>
+  </div>
+}
+
+@if (matchStarted) {
+  <app-scorer></app-scorer>
+} @else {
+  <section class="players-and-team" [class.is-hidden]="isLoading">
+    <div class="players-and-team__header">
+    <h2>Players & Team</h2>
+    <p>Add between 2 and 11 players for each team.</p>
+  </div>
+
+  <div class="players-and-team__grid">
+    <div class="team-card team-card--a">
+      <div class="team-card__header">
+        <div class="team-card__title-wrap">
+          <span class="team-card__badge">⚡</span>
+          <h3>Team A</h3>
+        </div>
+      </div>
+
+      @for (player of teamAPlayers; track $index) {
+        <div class="player-row">
+          <label [for]="'team-a-' + $index">Player {{ $index + 1 }} Name</label>
+          <div class="player-row__actions">
+            <input
+              [id]="'team-a-' + $index"
+              type="text"
+              [ngModel]="player"
+              (ngModelChange)="updatePlayer('A', $index, $event)"
+              placeholder="Enter player name"
+            />
+            <button
+              type="button"
+              class="remove-btn"
+              (click)="removePlayer()"
+              [disabled]="!canRemovePlayer"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      }
+
+      <button class="add-btn" type="button" (click)="addPlayer()" [disabled]="!canAddPlayer">
+        Add Player
+      </button>
+    </div>
+
+    <div class="team-card team-card--b">
+      <div class="team-card__header">
+        <div class="team-card__title-wrap">
+          <span class="team-card__badge">⚡</span>
+          <h3>Team B</h3>
+        </div>
+      </div>
+
+      @for (player of teamBPlayers; track $index) {
+        <div class="player-row">
+          <label [for]="'team-b-' + $index">Player {{ $index + 1 }} Name</label>
+          <div class="player-row__actions">
+            <input
+              [id]="'team-b-' + $index"
+              type="text"
+              [ngModel]="player"
+              (ngModelChange)="updatePlayer('B', $index, $event)"
+              placeholder="Enter player name"
+            />
+            <button
+              type="button"
+              class="remove-btn"
+              (click)="removePlayer()"
+              [disabled]="!canRemovePlayer"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      }
+
+      <button class="add-btn" type="button" (click)="addPlayer()" [disabled]="!canAddPlayer">
+        Add Player
+      </button>
+    </div>
+  </div>
+
+  <div class="match-setup">
+    <label for="batting-first">Select team to bat first</label>
+    <select id="batting-first" [(ngModel)]="battingFirstTeam">
+      <option value="A">Team A</option>
+      <option value="B">Team B</option>
+    </select>
+
+    <button class="start-btn" type="button" (click)="startMatch()">Save & Continue</button>
+  </div>
+</section>
+}

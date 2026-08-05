@@ -1,0 +1,482 @@
+// Variables
+:root {
+  --primary-blue: #2563eb;
+  --gray-900: #1f2937;
+  --gray-700: #374151;
+}
+
+.players-and-team {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(247,248,255,0.95));
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.players-and-team.is-hidden {
+  display: none;
+}
+
+// Loader Styles
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.loader-card {
+  padding: 2rem;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  text-align: center;
+
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+  }
+}
+
+.loader-spinner {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  border: 4px solid rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.loader-card p {
+  margin: 0;
+  color: var(--gray-700);
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Header Styles
+.players-and-team__header {
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
+}
+
+.players-and-team__header h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  color: var(--gray-900);
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+}
+
+.players-and-team__header p {
+  margin: 0;
+  color: var(--gray-700);
+  font-size: 0.95rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+}
+
+// Grid Layout
+.players-and-team__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 850px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}
+
+// Team Card Styles
+.team-card {
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    gap: 0.6rem;
+    border-radius: 0.85rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
+.team-card--a {
+  background: linear-gradient(135deg, #fff2f2 0%, #ffe0e0 100%);
+  border-left: 4px solid #dc2626;
+}
+
+.team-card--b {
+  background: linear-gradient(135deg, #eef6ff 0%, #dbeafe 100%);
+  border-left: 4px solid #2563eb;
+}
+
+// Team Card Header
+.team-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 480px) {
+    padding-bottom: 0.4rem;
+  }
+}
+
+.team-card__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+  }
+}
+
+.team-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  font-size: 1rem;
+
+  @media (max-width: 480px) {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+.team-card__header h3 {
+  margin: 0;
+  color: var(--gray-900);
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+// Player Row Styles
+.player-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+
+  @media (max-width: 480px) {
+    gap: 0.3rem;
+    padding: 0.4rem 0;
+  }
+}
+
+.player-row label {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
+}
+
+.player-row__actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+
+  @media (max-width: 480px) {
+    gap: 0.4rem;
+  }
+}
+
+.player-row input {
+  flex: 1;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  font-size: 0.9rem;
+  background: rgba(255,255,255,0.9);
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: 2px solid rgba(37, 99, 235, 0.3);
+    border-color: #2563eb;
+    background: white;
+    color: Black;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+// Button Styles
+.add-btn,
+.remove-btn {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.65rem;
+  }
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  margin-top: auto;
+  width: 100%;
+  padding: 0.7rem 1rem;
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 0.8rem;
+  }
+}
+
+.remove-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  min-width: 65px;
+}
+
+.team-card button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+// Match Setup Section
+.match-setup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.85rem;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+
+  @media (max-width: 768px) {
+    gap: 0.75rem;
+    padding: 0.85rem;
+    border-radius: 0.75rem;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.75rem;
+    align-items: stretch;
+  }
+}
+
+.match-setup label {
+  font-weight: 700;
+  color: var(--gray-700);
+  font-size: 0.95rem;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
+}
+
+.match-setup select {
+  min-width: 160px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  font-weight: 500;
+  background: rgba(255,255,255,0.95);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: 2px solid rgba(37, 99, 235, 0.3);
+    border-color: #2563eb;
+  }
+
+  @media (max-width: 768px) {
+    min-width: 140px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+// Start Button
+.start-btn {
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.7rem 1.5rem;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+// Dark Mode Support
+@media (prefers-color-scheme: dark) {
+  .players-and-team {
+    background: linear-gradient(135deg, #1f2937, #111827);
+    color: #f3f4f6;
+  }
+
+  .players-and-team__header h2 {
+    color: #f3f4f6;
+  }
+
+  .players-and-team__header p,
+  .match-setup label,
+  .player-row label {
+    color: #d1d5db;
+  }
+
+  .team-card {
+    background: #374151;
+  }
+
+  .team-card--a {
+    background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+  }
+
+  .team-card--b {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+  }
+
+  .player-row input,
+  .match-setup select {
+    background: #4b5563;
+    color: #f3f4f6;
+    border-color: #6b7280;
+  }
+
+  .player-row input:focus,
+  .match-setup select:focus {
+    border-color: #2563eb;
+  }
+}
+
