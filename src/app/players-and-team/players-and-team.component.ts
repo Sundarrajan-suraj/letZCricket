@@ -22,6 +22,10 @@ export class PlayersAndTeamComponent implements OnInit {
   teamAPlayers: string[] = ['', ''];
   teamBPlayers: string[] = ['', ''];
   battingFirstTeam: 'A' | 'B' = 'A';
+  noOfOvers: number = 0;
+  striker: string = '';
+  nonstriker: string = '';
+  bowler: string = '';
   isLoading = true;
   matchStarted = false;
   readonly minPlayers = 2;
@@ -57,6 +61,10 @@ export class PlayersAndTeamComponent implements OnInit {
     const savedTeams = this.localStorageService.getObject<TeamPlayerEntry[]>('team__player_details');
     const savedBattingFirst = this.localStorageService.getObject<'A' | 'B'>('team__batting_first');
     const matchStarted = this.localStorageService.getObject<boolean>('match__started');
+    const noOfOvers = this.localStorageService.getObject<number>('no-of-overs');
+    const striker = this.localStorageService.getObject<string>('striker');
+    const nonstriker = this.localStorageService.getObject<string>('nonstriker');
+    const bowler = this.localStorageService.getObject<string>('bowler');
 
     if (savedTeams && savedTeams.length >= 2) {
       const teamA = savedTeams.find((team) => team.team === 'A');
@@ -68,6 +76,19 @@ export class PlayersAndTeamComponent implements OnInit {
 
     if (savedBattingFirst) {
       this.battingFirstTeam = savedBattingFirst;
+    }
+
+    if (noOfOvers) {
+      this.noOfOvers = noOfOvers;
+    }
+    if (striker) {
+      this.striker = striker;
+    }
+    if (nonstriker) {
+      this.nonstriker = nonstriker;
+    }
+    if (bowler) {
+      this.bowler = bowler;
     }
 
     if (matchStarted) {
@@ -103,9 +124,38 @@ export class PlayersAndTeamComponent implements OnInit {
       { team: 'B', players: this.teamBPlayers }
     ];
 
+    if(this.noOfOvers == 0) {
+      alert('Please enter a valid number of overs');
+      return;
+    }
+
+    if(this.striker == "") {
+      alert('Please select Striker Batsmen');
+      return;
+    }
+
+    if(this.striker === this.nonstriker) {
+      alert('Please select Different Sriker | Non-Striker Batsmen');
+      return;
+    }
+
+    if(this.nonstriker == "") {
+      alert('Please select Non-Striker Batsmen');
+      return;
+    }
+
+    if(this.bowler == "") {
+      alert('Please Select First Bowler');
+      return;
+    }
+
     this.localStorageService.setObject('team__player_details', teams);
     this.localStorageService.setObject('team__batting_first', this.battingFirstTeam);
     this.localStorageService.setObject('match__started', true);
+    this.localStorageService.setObject('no-of-overs', this.noOfOvers);
+    this.localStorageService.setObject('striker', this.striker);
+    this.localStorageService.setObject('nonstriker', this.nonstriker);
+    this.localStorageService.setObject('bowler', this.bowler);
     this.matchStarted = true;
   }
 }

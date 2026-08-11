@@ -290,6 +290,9 @@
   <button class="reset-match-btn" type="button" (click)="resetMatch()">
     Reset Match
   </button>
+
+  <!-- Conditionally display the modal -->
+<app-reset-options-modal *ngIf="showModal" (close)="handleModalClose($event)"></app-reset-options-modal>
   <div class="content">
     <div class="left-side">
       <h1>{{ title() }}</h1>

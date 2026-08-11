@@ -1278,3 +1278,39 @@
   }
 }
 
+.switch-innings-btn {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.65rem;
+  }
+}
+
+.switch-innings-btn{
+  background: linear-gradient(135deg, #eb6a25 0%, #d8841d 100%);
+  margin-top: auto;
+  width: 100%;
+  padding: 0.7rem 1rem;
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 0.8rem;
+  }
+}

@@ -55,17 +55,21 @@
       <div class="score-display">
         <div class="score-card">
           <div class="score-value">{{ matchState.totalScore }}</div>
-          <div class="score-label">Score</div>
+          @if(matchState.isSecondInnings) {
+            <div class="score-label">Score / {{ matchState.firstInningsScore + 1 }}</div>
+          } @else {
+            <div class="score-label">Score</div>
+          }
         </div>
         <div class="divider"></div>
         <div class="overs-card">
           <div class="overs-value">{{ matchState.overs }}.{{ matchState.balls }}</div>
-          <div class="overs-label">Over</div>
+          <div class="overs-label">Over / {{ targetOversInput }}</div>
         </div>
         <div class="divider"></div>
         <div class="wickets-card">
           <div class="wickets-value">{{ matchState.wickets }}</div>
-          <div class="wickets-label">Wicket</div>
+          <div class="wickets-label">Wicket / {{ matchState.maxWickets }}</div>
         </div>
       </div>
 
@@ -163,7 +167,7 @@
         <span class="btn-label">Six</span>
       </button>
       <button class="action-btn action-btn--wide" (click)="recordRun(1, 'wide')">
-        <span class="btn-value">W</span>
+        <span class="btn-value">WD</span>
         <span class="btn-label">Wide</span>
       </button>
       <button class="action-btn action-btn--noball" (click)="recordRun(1, 'noball')">
@@ -277,6 +281,11 @@
         </div>
       </div>
     </div>
+    @if(!matchState.isSecondInnings && endofinnings) {
+      <button class="switch-innings-btn" (click)="switchInnings()">Start Second Innings -></button>
+    } @else if( endofinnings ) {
+      <button class="switch-innings-btn" (click)="goHome()">Go to Home</button>
+    }
   </div>
 }
 

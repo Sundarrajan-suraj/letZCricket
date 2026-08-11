@@ -78,6 +78,8 @@ export class ScorerComponent implements OnInit {
   battingFirstTeam: 'A' | 'B' = 'A';
   showScoreboard = false;
 
+  endofinnings = false;
+
   // Dialog/Selection properties
   showTargetOversDialog = false;
   showBatsmanSelectionDialog = false;
@@ -123,12 +125,21 @@ export class ScorerComponent implements OnInit {
   private loadMatchData(): void {
     const teams = this.localStorageService.getObject<TeamPlayerEntry[]>('team__player_details');
     const battingFirst = this.localStorageService.getObject<'A' | 'B'>('team__batting_first');
+    const striker = this.localStorageService.getObject<string>('striker');
+    const nonstriker = this.localStorageService.getObject<string>('nonstriker');
+    const bowler = this.localStorageService.getObject<string>('bowler');
+    const targetOversInput = this.localStorageService.getObject<number>('no-of-overs') ?? 0;
 
     if (teams) {
       this.teamData = teams;
       this.matchState.battingTeam = battingFirst || 'A';
       this.matchState.bowlingTeam = battingFirst === 'A' ? 'B' : 'A';
       this.matchState.currentInnings = battingFirst || 'A';
+      this.targetOversInput = targetOversInput;
+
+      this.matchState.strikerIndex = this.teamData[(battingFirst === 'A' ? 0 : 1)].players.findIndex(p => p === striker);
+      this.matchState.nonStrikerIndex = this.teamData[(battingFirst === 'A' ? 0 : 1)].players.findIndex(p => p === nonstriker);
+      this.matchState.bowlerIndex = this.teamData[(battingFirst === 'A' ? 1 : 0)].players.findIndex(p => p === bowler);
 
       // Calculate max wickets based on player count (total players - 1)
       const playerCount = teams[0]?.players?.length || 11;
@@ -244,6 +255,32 @@ export class ScorerComponent implements OnInit {
         }
     }
 
+    const maxovers = this.localStorageService.getObject<number>('no-of-overs') ?? 0;
+
+    // Check if all wickets are down
+    if (this.matchState.wickets === this.matchState.maxWickets || this.matchState.overs === maxovers || (this.matchState.isSecondInnings && this.matchState.totalScore >= this.matchState.firstInningsScore + 1)) {
+      // Close any open dialogs
+      this.endofinnings = true;
+
+      this.showBatsmanSelectionDialog = false;
+      this.showBowlerSelectionDialog = false;
+      this.availableBatsmen = [];
+      this.availableBowlers = [];
+
+      if (!this.matchState.isSecondInnings) {
+        // End of first innings - prepare for second innings
+        alert(`First Innings Over!\n\nTeam ${this.matchState.battingTeam} - ${this.matchState.totalScore}/${this.matchState.wickets} (${this.matchState.overs}.${this.matchState.balls})\n\nTeam ${this.matchState.bowlingTeam} to chase!`);
+        this.showTargetOversDialog = true;
+        this.targetOversInput = this.matchState.overs; // Default to same overs as first innings
+      } else {
+        // Match over
+        const winner = this.matchState.totalScore > this.matchState.firstInningsScore ? this.matchState.battingTeam : this.matchState.bowlingTeam;
+        this.toggleScoreboard();
+        alert(`Match Over!\n\nTeam ${this.matchState.bowlingTeam} - ${this.matchState.firstInningsScore} (${this.matchState.firstInningsOvers}.${this.matchState.firstInningsBalls})\nTeam ${this.matchState.battingTeam} - ${this.matchState.totalScore}/${this.matchState.wickets} (${this.matchState.overs}.${this.matchState.balls})\n\nTeam ${winner} Wins!`);
+      }
+      return; // Don't show batsman selection when innings is over
+    }
+
     this.saveMatchState();
   }
 
@@ -288,7 +325,8 @@ export class ScorerComponent implements OnInit {
 
   confirmTargetOvers(): void {
     this.matchState.targetOvers = this.targetOversInput;
-    this.switchInnings();
+    this.saveMatchState();
+    this.showScoreboard = true;
     this.showTargetOversDialog = false;
   }
 
@@ -307,9 +345,14 @@ export class ScorerComponent implements OnInit {
 
     this.saveMatchState();
 
+    const maxovers = this.localStorageService.getObject<number>('no-of-overs') ?? 0;
+    
+
     // Check if all wickets are down
-    if (this.matchState.wickets === this.matchState.maxWickets) {
+    if (this.matchState.wickets === this.matchState.maxWickets || this.matchState.overs === maxovers || (this.matchState.isSecondInnings && this.matchState.totalScore >= this.matchState.firstInningsScore + 1)) {
       // Close any open dialogs
+      this.endofinnings = true;
+
       this.showBatsmanSelectionDialog = false;
       this.showBowlerSelectionDialog = false;
       this.availableBatsmen = [];
@@ -350,7 +393,7 @@ export class ScorerComponent implements OnInit {
     this.saveMatchState();
   }
 
-  private switchInnings(): void {
+  public switchInnings(): void {
     // Store first innings data
     if (!this.matchState.isSecondInnings) {
       this.matchState.firstInningsScore = this.matchState.totalScore;
@@ -383,8 +426,10 @@ export class ScorerComponent implements OnInit {
     // Calculate runs required and balls remaining
     this.matchState.runsRequired = this.matchState.firstInningsScore + 1;
     this.matchState.ballsRemaining = (this.matchState.firstInningsOvers + 1) * 6 - (this.matchState.firstInningsBalls + 1);
-
+  
     this.saveMatchState();
+    this.showScoreboard = false;
+    this.endofinnings = false;
   }
 
   undoLastBall(): void {
@@ -502,6 +547,18 @@ export class ScorerComponent implements OnInit {
 
   private saveMatchState(): void {
     this.localStorageService.setObject('match__state', this.matchState);
+  }
+
+  public goHome(): void {
+    this.localStorageService.setObject('match__started', false);
+    this.clearMatchData();
+    window.location.reload();
+  }
+
+  private clearMatchData() {
+    // Clear only match-related data
+    const matchKeys = ['match__started', 'match__state', 'match__score']; // example keys
+    matchKeys.forEach(key => this.localStorageService.deleteObject(key));
   }
 }
 
